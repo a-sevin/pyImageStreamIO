@@ -258,6 +258,7 @@ PYBIND11_MODULE(pyImageStreamIO, m) {
                 );
 
         })
+        
         .def("write", [](IMAGE &img, py::buffer b){
             /* Request a buffer descriptor from Python */
             py::buffer_info info = b.request();
@@ -293,50 +294,58 @@ PYBIND11_MODULE(pyImageStreamIO, m) {
           Parameters:
             buffer [in]:  buffer to put into memory image stream
           )pbdoc",
-          py::arg("buffer"));
+          py::arg("buffer"))
 
-    m.def("create", [](std::string name, py::array_t<uint32_t> b, uint8_t atype, uint8_t shared, uint16_t NBkw) {
-        /* Request a buffer descriptor from Python */
-        py::buffer_info info = b.request();
+        .def("create", [](IMAGE &img, std::string name, py::array_t<uint32_t> b, uint8_t atype, uint8_t shared, uint16_t NBkw) {
+            /* Request a buffer descriptor from Python */
+            py::buffer_info info = b.request();
 
-        // uint8_t atype = PyFormatToMydatatype(info.format).atype;
-        // std::vector<uint32_t> ushape(info.ndim);
-        // std::copy(info.shape.begin(), info.shape.end(), ushape.begin());                
+            // uint8_t atype = PyFormatToMydatatype(info.format).atype;
+            // std::vector<uint32_t> ushape(info.ndim);
+            // std::copy(info.shape.begin(), info.shape.end(), ushape.begin());                
 
-        auto img = std::unique_ptr<IMAGE>(new IMAGE());
-        ImageStreamIO_createIm(img.get(), name.c_str(), info.size, (uint32_t*)info.ptr, atype, shared, NBkw);
+            return ImageStreamIO_createIm(&img, name.c_str(), info.size, (uint32_t*)info.ptr, atype, shared, NBkw);
+        }, R"pbdoc(
+            Create shared memory image stream
 
-        return img;
-    }, R"pbdoc(
-          Create shared memory image stream
+            Parameters:
+                name   [in]:  the name of the shared memory file will be SHAREDMEMDIR/<name>_im.shm
+                dims   [in]:  np.array of the image.
+                atype  [in]:  data type code, pyImageStreamIO.Datatype
+                shared [in]:  if true then a shared memory buffer is allocated.  If false, only local storage is used.
+                NBkw   [in]:  the number of keywords to allocate.
+            Return:
+                ret    [out]: error code
+            )pbdoc",
+            py::arg("name"),
+            py::arg("buffer"),
+            py::arg("atype") = MyDatatype::Type::FLOAT,
+            py::arg("shared") = 1,
+            py::arg("NBkw") = 1)
+            
+        .def("read", [](IMAGE &img, std::string name) {
+            return ImageStreamIO_read_sharedmem_image_toIMAGE(name.c_str(), &img);
+        }, R"pbdoc(
+            Read / connect to existing shared memory image stream
 
-          Parameters:
-            name   [in]:  the name of the shared memory file will be SHAREDMEMDIR/<name>_im.shm
-            dims   [in]:  np.array of the image.
-            atype  [in]:  data type code, pyImageStreamIO.Datatype
-            shared [in]:  if true then a shared memory buffer is allocated.  If false, only local storage is used.
-            NBkw   [in]:  the number of keywords to allocate.
-          Return:
-            image  [out]: Image Buffer
-          )pbdoc",
-          py::arg("name"),
-          py::arg("buffer"),
-          py::arg("atype") = MyDatatype::Type::FLOAT,
-          py::arg("shared") = 1,
-          py::arg("NBkw") = 1
-          );
-          
-    m.def("read", [](std::string name) {
-        auto img = std::unique_ptr<IMAGE>(new IMAGE());
-        ImageStreamIO_read_sharedmem_image_toIMAGE(name.c_str(), img.get());
-        return img;        
-    }, R"pbdoc(
-          Read / connect to existing shared memory image stream
+            Parameters:
+                name   [in]:  the name of the shared memory file to connect
+            Return:
+                ret    [out]: error code
+            )pbdoc",
+            py::arg("name"))
 
-          Parameters:
-            name   [in]:  the name of the shared memory file to connect
-          Return:
-            image  [out]: Image Buffer
-          )pbdoc",
-          py::arg("name"));
+        .def("semwait", [](IMAGE &img, long index) {
+            return ImageStreamIO_semwait(&img, index);
+        }, R"pbdoc(
+            Read / connect to existing shared memory image stream
+
+            Parameters:
+                index  [in]:  semaphore index
+            Return:
+                ret    [out]: error code
+            )pbdoc",
+            py::arg("index"));
+
 }
+
