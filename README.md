@@ -10,10 +10,10 @@
 
 ```python
 import numpy as np
-from pyImageStreamIO import Image
+from pyImageStreamIO import Image, Datatype
 img = Image()
-img.create("test", [512, 512], pyImageStreamIO.Datatype.FLOAT, 1, 1)  
-img.write(np.ones((512,512), dtype=np.float32))                       
+img.create("test", [512, 512], Datatype.FLOAT, 1, 1)
+img.write(np.ones((512,512), dtype=np.float32))
 img.semwait(0)
 img.read("test")
 ```
