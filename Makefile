@@ -23,3 +23,6 @@ all: pybind
 
 clean:
 	rm *.o $(LIB).so
+
+install_hraa:
+	cp pyImageStreamIO.so $(HRAAPATH)/hraa/lib

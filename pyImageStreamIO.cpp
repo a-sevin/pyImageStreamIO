@@ -263,7 +263,21 @@ PYBIND11_MODULE(pyImageStreamIO, m)
         .def_readonly("used", &IMAGE::used)
         .def_readonly("memsize", &IMAGE::memsize)
         .def_readonly("md", &IMAGE::md)
-        .def_readonly("kw", &IMAGE::kw)
+        .def_property_readonly("kw", [](const IMAGE &img) -> py::buffer_info {
+            std::string format = py::format_descriptor<IMAGE_KEYWORD>::format();
+            std::vector<ssize_t> shape = {img.md->NBkw};
+            std::vector<ssize_t> strides = {img.md->NBkw};
+
+            return py::buffer_info(
+                img.kw,                 /* Pointer to buffer */
+                sizeof(IMAGE_KEYWORD*), /* Size of one scalar */
+                format,                 /* Python struct-style format descriptor */
+                1,                      /* Number of dimensions */
+                shape,                  /* Buffer dimensions */
+                strides                 /* Strides (in bytes) for each index */
+            );
+
+        })
         .def_buffer([](const IMAGE &img) -> py::buffer_info {
             MyDatatype dt(img.md->atype);
             std::string format = MydatatypeToPyFormat(dt);
@@ -348,7 +362,7 @@ PYBIND11_MODULE(pyImageStreamIO, m)
                 ret    [out]: error code
             )pbdoc", py::arg("name"), py::arg("buffer"), py::arg("atype") = MyDatatype::Type::FLOAT, py::arg("shared") = 1, py::arg("NBkw") = 1)
 
-        .def("read", [](IMAGE &img, std::string name) {
+        .def("link", [](IMAGE &img, std::string name) {
             return ImageStreamIO_read_sharedmem_image_toIMAGE(name.c_str(), &img);
         },
              R"pbdoc(
