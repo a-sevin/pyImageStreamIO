@@ -1,11 +1,10 @@
-# Using COMPASS as a simulated bench for CACAO
+# Using pyImageStreamIO to read/write for CACAO SHM
 
-- [Using COMPASS as a simulated bench for CACAO](#using-compass-as-a-simulated-bench-for-cacao)
-    - [CACAO installation](#cacao-installation)
-    - [Anaconda installation](#anaconda-installation)
-    - [PyImageStreamIO + pyBind11 library](#pyimagestreamio-pybind11-library)
-    - [Summary environment variables](#summary-environment-variables)
-    - [usage](#usage)
+- [CACAO installation](#cacao-installation)
+- [Anaconda installation](#anaconda-installation)
+- [PyImageStreamIO + pyBind11 library](#pyimagestreamio-pybind11-library)
+- [Summary environment variables](#summary-environment-variables)
+- [usage](#usage)
 
 ## CACAO installation
 
