@@ -1,4 +1,4 @@
-# Using pyImageStreamIO to read/write for CACAO SHM
+# Using pyImageStreamIO to read/write python data from/into CACAO SHM
 
 - [CACAO installation](#cacao-installation)
 - [Anaconda installation](#anaconda-installation)
@@ -56,7 +56,7 @@ export CONDA_ROOT=$HOME/miniconda3
 export PATH=$CONDA_ROOT/bin:$PATH
 ```
 
-## usage 
+## usage
 
 ```python
 import numpy as np
