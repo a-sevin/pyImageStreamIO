@@ -1,15 +1,15 @@
 CC=g++
 
-CONDA_ROOT   ?= $(HOME)/miniconda3
-PYBIND11_ROOT?= $(HRAAPATH)/hraa/lib/pybind11
-CACAO_ROOT  ?= $(HOME)/workspace/cacao
+CONDA_ROOT    ?= $(HOME)/miniconda3
+PYBIND11_ROOT ?= $(HRAAPATH)/hraa/lib/pybind11
+CACAO_ROOT    ?= $(HOME)/workspace/cacao
 
-LIB_CPPFLAGS  = -W -Wall -fPIC -pedantic -isystem /usr/include/python3.6m --std=c++11
-LIB_CPPFLAGS += -isystem $(CONDA_ROOT)/include/python3.6m -isystem $(PYBIND11_ROOT)/include # -isystem $(BOOST_ROOT)/include
-LIB_CPPFLAGS += -isystem $(CACAO_ROOT)/src/ImageStreamIO
+LIB_CPPFLAGS   = -W -Wall -fPIC -pedantic --std=c++11  # -isystem /usr/include/python3.6m
+LIB_CPPFLAGS  += -isystem $(CONDA_ROOT)/include/python3.6m -isystem $(PYBIND11_ROOT)/include
+LIB_CPPFLAGS  += -isystem $(CACAO_ROOT)/src/ImageStreamIO
 
-LIB_DEPLIBS  += -ldl -lrt -lpython3 -lpython3.6m # -lboost_python3 -lboost_numpy3
-LIB_DEPLIBS  += $(CACAO_ROOT)/lib/libimagestreamio.la
+LIB_DEPLIBS   += -ldl -lrt -lpython3 -lpython3.6m
+LIB_DEPLIBS   += $(CACAO_ROOT)/lib/libimagestreamio.la
 
 LIB = pyImageStreamIO
 
@@ -22,7 +22,13 @@ all: pybind
 	$(CC) $(LIB_CPPFLAGS) -c $<
 
 clean:
-	rm *.o $(LIB).so
+	rm *.o
+
+clean_lib:
+	rm $(LIB).so
 
 install_hraa:
 	cp pyImageStreamIO.so $(HRAAPATH)/hraa/lib
+
+install_conda:
+	cp pyImageStreamIO.so $(CONDA_ROOT)/lib
