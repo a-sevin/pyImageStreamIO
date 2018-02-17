@@ -40,7 +40,8 @@ export PATH=$CONDA_ROOT/bin:$PATH
 cd $HOME
 git clone --recursive https://github.com/pybind/pybind11.git
 export PYBIND11_ROOT=$HOME/pybind11
-git clone https://github.com/milk-org/pyImageStreamIO.git
+git clone -b dev https://github.com/milk-org/pyImageStreamIO.git
+cd pyImageStreamIO
 make
 make install_conda
 ```
