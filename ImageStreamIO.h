@@ -28,6 +28,12 @@ int ImageStreamIO_createIm(IMAGE *image, const char *name, long naxis, uint32_t 
 long ImageStreamIO_read_sharedmem_image_toIMAGE(const char *name, IMAGE *image);
 
 
+int ImageStreamIO_semwait(IMAGE *image, int index);
+
+
+int ImageStreamIO_sempost(IMAGE *image, int flag);
+
+
 #endif
 
 
