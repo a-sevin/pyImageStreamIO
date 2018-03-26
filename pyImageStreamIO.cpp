@@ -19,7 +19,7 @@ extern "C" {
 
 namespace py = pybind11;
 
-struct MyDatatype
+struct CacaoDatatype
 {
     enum Type : uint8_t
     {
@@ -42,11 +42,11 @@ struct MyDatatype
     Type atype;
     uint8_t asize;
 
-    MyDatatype(uint8_t atype) : atype(static_cast<MyDatatype::Type>(atype)),
+    CacaoDatatype(uint8_t atype) : atype(static_cast<CacaoDatatype::Type>(atype)),
                                 asize(Size[atype]){};
 };
 
-const std::vector<uint8_t> MyDatatype::Size({0,
+const std::vector<uint8_t> CacaoDatatype::Size({0,
                                              SIZEOF_DATATYPE_UINT8,
                                              SIZEOF_DATATYPE_INT8,
                                              SIZEOF_DATATYPE_UINT16,
@@ -61,61 +61,61 @@ const std::vector<uint8_t> MyDatatype::Size({0,
                                              SIZEOF_DATATYPE_COMPLEX_DOUBLE,
                                              SIZEOF_DATATYPE_EVENT_UI8_UI8_UI16_UI8});
 
-std::string MydatatypeToPyFormat(MyDatatype dt)
+std::string CacaoDatatypeToPyFormat(CacaoDatatype dt)
 {
     switch (dt.atype)
     {
-    case MyDatatype::Type::UINT8:
+    case CacaoDatatype::Type::UINT8:
         return py::format_descriptor<uint8_t>::format();
-    case MyDatatype::Type::INT8:
+    case CacaoDatatype::Type::INT8:
         return py::format_descriptor<int8_t>::format();
-    case MyDatatype::Type::UINT16:
+    case CacaoDatatype::Type::UINT16:
         return py::format_descriptor<uint16_t>::format();
-    case MyDatatype::Type::INT16:
+    case CacaoDatatype::Type::INT16:
         return py::format_descriptor<int16_t>::format();
-    case MyDatatype::Type::UINT32:
+    case CacaoDatatype::Type::UINT32:
         return py::format_descriptor<uint32_t>::format();
-    case MyDatatype::Type::INT32:
+    case CacaoDatatype::Type::INT32:
         return py::format_descriptor<int32_t>::format();
-    case MyDatatype::Type::UINT64:
+    case CacaoDatatype::Type::UINT64:
         return py::format_descriptor<uint64_t>::format();
-    case MyDatatype::Type::INT64:
+    case CacaoDatatype::Type::INT64:
         return py::format_descriptor<int64_t>::format();
-    case MyDatatype::Type::FLOAT:
+    case CacaoDatatype::Type::FLOAT:
         return py::format_descriptor<float>::format();
-    case MyDatatype::Type::DOUBLE:
+    case CacaoDatatype::Type::DOUBLE:
         return py::format_descriptor<double>::format();
-    // case MyDatatype::Type::COMPLEX_FLOAT: return py::format_descriptor<(std::complex<float>>::format();
-    // case MyDatatype::Type::COMPLEX_DOUBLE: return py::format_descriptor<(std::complex<double>>::format();
+    // case CacaoDatatype::Type::COMPLEX_FLOAT: return py::format_descriptor<(std::complex<float>>::format();
+    // case CacaoDatatype::Type::COMPLEX_DOUBLE: return py::format_descriptor<(std::complex<double>>::format();
     default:
         throw std::invalid_argument("Not implemented");
     }
 }
 
-MyDatatype PyFormatToMydatatype(std::string pf)
+CacaoDatatype PyFormatToCacaoDatatype(std::string pf)
 {
     if (pf == py::format_descriptor<uint8_t>::format())
-        return MyDatatype::Type::UINT8;
+        return CacaoDatatype::Type::UINT8;
     if (pf == py::format_descriptor<int8_t>::format())
-        return MyDatatype::Type::INT8;
+        return CacaoDatatype::Type::INT8;
     if (pf == py::format_descriptor<uint16_t>::format())
-        return MyDatatype::Type::UINT16;
+        return CacaoDatatype::Type::UINT16;
     if (pf == py::format_descriptor<int16_t>::format())
-        return MyDatatype::Type::INT16;
+        return CacaoDatatype::Type::INT16;
     if (pf == py::format_descriptor<uint32_t>::format())
-        return MyDatatype::Type::UINT32;
+        return CacaoDatatype::Type::UINT32;
     if (pf == py::format_descriptor<int32_t>::format())
-        return MyDatatype::Type::INT32;
+        return CacaoDatatype::Type::INT32;
     if (pf == py::format_descriptor<uint64_t>::format())
-        return MyDatatype::Type::UINT64;
+        return CacaoDatatype::Type::UINT64;
     if (pf == py::format_descriptor<int64_t>::format())
-        return MyDatatype::Type::INT64;
+        return CacaoDatatype::Type::INT64;
     if (pf == py::format_descriptor<float>::format())
-        return MyDatatype::Type::FLOAT;
+        return CacaoDatatype::Type::FLOAT;
     if (pf == py::format_descriptor<double>::format())
-        return MyDatatype::Type::DOUBLE;
-    // case MyDatatype::Type::COMPLEX_FLOAT: return py::format_descriptor<(std::complex<float>>::format();
-    // case MyDatatype::Type::COMPLEX_DOUBLE: return py::format_descriptor<(std::complex<double>>::format();
+        return CacaoDatatype::Type::DOUBLE;
+    // case CacaoDatatype::Type::COMPLEX_FLOAT: return py::format_descriptor<(std::complex<float>>::format();
+    // case CacaoDatatype::Type::COMPLEX_DOUBLE: return py::format_descriptor<(std::complex<double>>::format();
     throw std::invalid_argument("Not implemented");
 }
 
@@ -124,27 +124,27 @@ PYBIND11_MODULE(pyImageStreamIO, m)
 {
     m.doc() = "";
 
-    auto mydatatype = py::class_<MyDatatype>(m, "Datatype")
+    auto cacaoDatatype = py::class_<CacaoDatatype>(m, "Datatype")
                           .def(py::init([](uint8_t atype) {
-                              return std::unique_ptr<MyDatatype>(new MyDatatype(atype));
+                              return std::unique_ptr<CacaoDatatype>(new CacaoDatatype(atype));
                           }))
-                          .def_readonly("size", &MyDatatype::asize)
-                          .def_readonly("type", &MyDatatype::atype);
+                          .def_readonly("size", &CacaoDatatype::asize)
+                          .def_readonly("type", &CacaoDatatype::atype);
 
-    py::enum_<MyDatatype::Type>(mydatatype, "Type")
-        .value("UINT8", MyDatatype::Type::UINT8)
-        .value("INT8", MyDatatype::Type::INT8)
-        .value("UINT16", MyDatatype::Type::UINT16)
-        .value("INT16", MyDatatype::Type::INT16)
-        .value("UINT32", MyDatatype::Type::UINT32)
-        .value("INT32", MyDatatype::Type::INT32)
-        .value("UINT64", MyDatatype::Type::UINT64)
-        .value("INT64", MyDatatype::Type::INT64)
-        .value("FLOAT", MyDatatype::Type::FLOAT)
-        .value("DOUBLE", MyDatatype::Type::DOUBLE)
-        .value("COMPLEX_FLOAT", MyDatatype::Type::COMPLEX_FLOAT)
-        .value("COMPLEX_DOUBLE", MyDatatype::Type::COMPLEX_DOUBLE)
-        .value("EVENT_UI8_UI8_UI16_UI8", MyDatatype::Type::EVENT_UI8_UI8_UI16_UI8)
+    py::enum_<CacaoDatatype::Type>(cacaoDatatype, "Type")
+        .value("UINT8", CacaoDatatype::Type::UINT8)
+        .value("INT8", CacaoDatatype::Type::INT8)
+        .value("UINT16", CacaoDatatype::Type::UINT16)
+        .value("INT16", CacaoDatatype::Type::INT16)
+        .value("UINT32", CacaoDatatype::Type::UINT32)
+        .value("INT32", CacaoDatatype::Type::INT32)
+        .value("UINT64", CacaoDatatype::Type::UINT64)
+        .value("INT64", CacaoDatatype::Type::INT64)
+        .value("FLOAT", CacaoDatatype::Type::FLOAT)
+        .value("DOUBLE", CacaoDatatype::Type::DOUBLE)
+        .value("COMPLEX_FLOAT", CacaoDatatype::Type::COMPLEX_FLOAT)
+        .value("COMPLEX_DOUBLE", CacaoDatatype::Type::COMPLEX_DOUBLE)
+        .value("EVENT_UI8_UI8_UI16_UI8", CacaoDatatype::Type::EVENT_UI8_UI8_UI16_UI8)
         .export_values();
 
     // IMAGE_KEYWORD interface
@@ -241,7 +241,7 @@ PYBIND11_MODULE(pyImageStreamIO, m)
         })
         .def_readonly("nelement", &IMAGE_METADATA::nelement)
         .def_property_readonly("atype", [](const IMAGE_METADATA &md) {
-            return MyDatatype(md.atype).atype;
+            return CacaoDatatype(md.atype).atype;
         })
         .def_readonly("creation_time", &IMAGE_METADATA::creation_time)
         .def_readonly("last_access", &IMAGE_METADATA::last_access)
@@ -279,8 +279,8 @@ PYBIND11_MODULE(pyImageStreamIO, m)
 
         })
         .def_buffer([](const IMAGE &img) -> py::buffer_info {
-            MyDatatype dt(img.md->atype);
-            std::string format = MydatatypeToPyFormat(dt);
+            CacaoDatatype dt(img.md->atype);
+            std::string format = CacaoDatatypeToPyFormat(dt);
             std::vector<ssize_t> shape(img.md->naxis);
             std::vector<ssize_t> strides(img.md->naxis);
             ssize_t stride = dt.asize;
@@ -305,7 +305,7 @@ PYBIND11_MODULE(pyImageStreamIO, m)
             /* Request a buffer descriptor from Python */
             py::buffer_info info = b.request();
 
-            if (img.md->atype != PyFormatToMydatatype(info.format).atype)
+            if (img.md->atype != PyFormatToCacaoDatatype(info.format).atype)
                 throw std::invalid_argument("incompatible type");
             if (info.ndim != img.md->naxis)
                 throw std::invalid_argument("incompatible number of axis");
@@ -317,7 +317,7 @@ PYBIND11_MODULE(pyImageStreamIO, m)
                 ++size_ptr;
             }
 
-            MyDatatype dt(img.md->atype);
+            CacaoDatatype dt(img.md->atype);
             uint8_t *buffer_ptr = (uint8_t *)info.ptr;
             uint64_t size = img.md->nelement * dt.asize;
 
@@ -343,7 +343,7 @@ PYBIND11_MODULE(pyImageStreamIO, m)
             /* Request a buffer descriptor from Python */
             py::buffer_info info = b.request();
 
-            // uint8_t atype = PyFormatToMydatatype(info.format).atype;
+            // uint8_t atype = PyFormatToCacaoDatatype(info.format).atype;
             // std::vector<uint32_t> ushape(info.ndim);
             // std::copy(info.shape.begin(), info.shape.end(), ushape.begin());
 
@@ -360,7 +360,7 @@ PYBIND11_MODULE(pyImageStreamIO, m)
                 NBkw   [in]:  the number of keywords to allocate.
             Return:
                 ret    [out]: error code
-            )pbdoc", py::arg("name"), py::arg("buffer"), py::arg("atype") = MyDatatype::Type::FLOAT, py::arg("shared") = 1, py::arg("NBkw") = 1)
+            )pbdoc", py::arg("name"), py::arg("buffer"), py::arg("atype") = CacaoDatatype::Type::FLOAT, py::arg("shared") = 1, py::arg("NBkw") = 1)
 
         .def("link", [](IMAGE &img, std::string name) {
             return ImageStreamIO_read_sharedmem_image_toIMAGE(name.c_str(), &img);
